@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestSearch(t *testing.T) {
-	t.Run("word that exists", func(t *testing.T) {
+	t.Run("definition that exists", func(t *testing.T) {
 		var dictionary = Dictionary{"test": "this is just a test"}
 		got, err := dictionary.Search("test")
 		want := "this is just a test"
@@ -12,7 +12,7 @@ func TestSearch(t *testing.T) {
 		}
 		assertStrings(t, got, want)
 	})
-	t.Run("word that doesn't exist", func(t *testing.T) {
+	t.Run("definition that doesn't exist", func(t *testing.T) {
 		dictionary := Dictionary{}
 		_, got := dictionary.Search("error")
 		assertError(t, got, ErrWordNotFound)
@@ -20,7 +20,7 @@ func TestSearch(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	t.Run("add new word", func(t *testing.T) {
+	t.Run("add new definition", func(t *testing.T) {
 		dictionary := Dictionary{}
 		word := "test"
 		definition := "this is just a test"
@@ -28,6 +28,27 @@ func TestAdd(t *testing.T) {
 
 		assertError(t, err, nil)
 		assertDefinition(t, dictionary, word, definition)
+	})
+}
+
+func TestUpdate(t *testing.T) {
+	t.Run("update existing definition", func(t *testing.T) {
+		dictionary := Dictionary{"test": "this is just a test"}
+		word := "test"
+		newDefinition := "update"
+		got := dictionary.Update(word, newDefinition)
+		assertError(t, got, nil)
+		assertDefinition(t, dictionary, word, newDefinition)
+	})
+}
+
+func TestDelete(t *testing.T) {
+	t.Run("delete existing definition", func(t *testing.T) {
+		dictionary := Dictionary{"test": "this is just a test"}
+		word := "test"
+		dictionary.Delete(word)
+		_, got := dictionary.Search(word)
+		assertError(t, got, ErrWordNotFound)
 	})
 }
 
